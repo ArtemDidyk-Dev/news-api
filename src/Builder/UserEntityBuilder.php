@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Builder;
 
 use App\DTO\UserDTO;
@@ -8,8 +10,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final readonly class UserEntityBuilder
 {
-    public function __construct(private UserPasswordHasherInterface $hasher)
-    {
+    public function __construct(
+        private UserPasswordHasherInterface $hasher
+    ) {
     }
 
     public function buildFromDTO(UserDTO $userDTO): User

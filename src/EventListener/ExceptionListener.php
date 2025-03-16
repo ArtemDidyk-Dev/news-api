@@ -1,20 +1,22 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\EventListener;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use InvalidArgumentException;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use InvalidArgumentException;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 final readonly class ExceptionListener implements EventSubscriberInterface
 {
@@ -38,35 +40,51 @@ final readonly class ExceptionListener implements EventSubscriberInterface
                 Response::HTTP_UNPROCESSABLE_ENTITY
             ),
             $exception instanceof UnauthorizedHttpException => new JsonResponse(
-                ['error' => $exception->getMessage() ?: 'Unauthorized'],
+                [
+                    'error' => $exception->getMessage() ?: 'Unauthorized',
+                ],
                 Response::HTTP_UNAUTHORIZED
             ),
             $exception instanceof NotFoundHttpException => new JsonResponse(
-                ['error' => $exception->getMessage() ?: 'Resource not found'],
+                [
+                    'error' => $exception->getMessage() ?: 'Resource not found',
+                ],
                 Response::HTTP_NOT_FOUND
             ),
             $exception instanceof AccessDeniedHttpException => new JsonResponse(
-                ['error' => $exception->getMessage() ?: 'Access denied'],
+                [
+                    'error' => $exception->getMessage() ?: 'Access denied',
+                ],
                 Response::HTTP_FORBIDDEN
             ),
             $exception instanceof BadRequestHttpException => new JsonResponse(
-                ['error' => $exception->getMessage()],
+                [
+                    'error' => $exception->getMessage(),
+                ],
                 Response::HTTP_BAD_REQUEST
             ),
             $exception instanceof HttpException => new JsonResponse(
-                ['error' => $exception->getMessage()],
+                [
+                    'error' => $exception->getMessage(),
+                ],
                 $exception->getStatusCode()
             ),
             $exception instanceof InvalidArgumentException => new JsonResponse(
-                ['error' => $exception->getMessage()],
+                [
+                    'error' => $exception->getMessage(),
+                ],
                 Response::HTTP_BAD_REQUEST
             ),
             $exception instanceof UniqueConstraintViolationException => new JsonResponse(
-                ['error' => 'Unique constraint violation'],
+                [
+                    'error' => 'Unique constraint violation',
+                ],
                 Response::HTTP_UNPROCESSABLE_ENTITY
             ),
             default => new JsonResponse(
-                ['error' => $exception->getMessage()],
+                [
+                    'error' => $exception->getMessage(),
+                ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             )
         };

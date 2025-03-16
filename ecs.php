@@ -11,9 +11,7 @@ use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 
 return static function (ECSConfig $ecsConfig): void {
     $ecsConfig->paths([
-        __DIR__.'/app',
-        __DIR__.'/tests',
-        __DIR__.'/routes',
+        __DIR__.'/src',
     ]);
 
     $ecsConfig->sets([
