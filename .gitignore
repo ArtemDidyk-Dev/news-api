@@ -9,6 +9,7 @@
 /vendor/
 /tmp/
 /opt/
+.idea/
 ###< symfony/framework-bundle ###
 
 ###> lexik/jwt-authentication-bundle ###

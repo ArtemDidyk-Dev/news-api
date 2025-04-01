@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DTO;
 
 use App\Entity\EntityInterface;
+use App\Entity\User;
 use App\Serializer\AccessGroup;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
@@ -14,9 +15,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class UserDTO implements DTOInterface
 {
+    #[Groups(AccessGroup::USER_SHOW)]
+    public ?int $id;
+
+
     #[Groups([AccessGroup::USER_CREATE])]
     #[NotBlank(groups: [AccessGroup::USER_CREATE])]
-    #[Email(groups: [AccessGroup::USER_CREATE])]
+    #[Email(groups: [AccessGroup::USER_CREATE, AccessGroup::USER_SHOW])]
     public string $email;
 
     #[Groups([AccessGroup::USER_CREATE])]
@@ -26,7 +31,7 @@ final class UserDTO implements DTOInterface
     public string $password;
 
     #[Groups([AccessGroup::USER_CREATE])]
-    #[NotBlank(groups: [AccessGroup::USER_CREATE])]
+    #[NotBlank(groups: [AccessGroup::USER_CREATE, AccessGroup::USER_SHOW])]
     public string $name;
 
     #[Ignore]
