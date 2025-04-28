@@ -3,18 +3,31 @@
 namespace App\Controller\Api;
 
 use App\DTO\PostDTO;
-use App\Entity\Post;
+use App\Manager\PostManager;
+use App\Manager\PostManagerList;
 use App\Serializer\AccessGroup;
+use Random\RandomException;
+use ReflectionException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 #[Route(name: 'api_posts_', format: 'json')]
 class PostController extends AbstractController
 {
+    public function __construct(
+        private readonly PostManager $postManager,
+        private readonly PostManagerList $postManagerList,
+    )
+    {
+    }
 
+    /**
+     * @throws ReflectionException
+     * @throws RandomException
+     */
     #[Route('posts/create', name: 'create', methods: 'POST')]
     public function create(
         #[MapRequestPayload (
@@ -26,14 +39,18 @@ class PostController extends AbstractController
         PostDTO $postDTO
     ): JsonResponse
     {
-       dd($postDTO);
-        return new JsonResponse(1);
+        return $this->json($this->postManager->create($postDTO), HttpResponse::HTTP_CREATED);
     }
 
+    /**
+     * @throws ReflectionException
+     * @throws RandomException
+     */
     #[Route('posts', name: 'index', methods: 'GET')]
     public function index(Request $request): JsonResponse
     {
-        dd(1);
+        $posts = $this->postManagerList->list($request);
+        return $this->json($posts , HttpResponse::HTTP_OK);
     }
 
 

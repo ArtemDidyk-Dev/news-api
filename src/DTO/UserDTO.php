@@ -15,11 +15,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class UserDTO implements DTOInterface
 {
-    #[Groups(AccessGroup::USER_SHOW)]
+    #[Groups([AccessGroup::USER_SHOW, AccessGroup::POST_CREATE, AccessGroup::POST_SHOW])]
     public ?int $id;
 
 
-    #[Groups([AccessGroup::USER_CREATE])]
+    #[Groups([AccessGroup::USER_CREATE,  AccessGroup::POST_CREATE, AccessGroup::POST_SHOW])]
     #[NotBlank(groups: [AccessGroup::USER_CREATE])]
     #[Email(groups: [AccessGroup::USER_CREATE, AccessGroup::USER_SHOW])]
     public string $email;
@@ -30,7 +30,7 @@ final class UserDTO implements DTOInterface
     #[Assert\PasswordStrength]
     public string $password;
 
-    #[Groups([AccessGroup::USER_CREATE])]
+    #[Groups([AccessGroup::USER_CREATE, AccessGroup::POST_CREATE, AccessGroup::POST_SHOW])]
     #[NotBlank(groups: [AccessGroup::USER_CREATE, AccessGroup::USER_SHOW])]
     public string $name;
 
