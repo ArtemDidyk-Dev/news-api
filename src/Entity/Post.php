@@ -7,9 +7,10 @@ namespace App\Entity;
 use App\DTO\DTOInterface;
 use App\DTO\PostDTO;
 use App\Repository\PostRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\DBAL\Types\Types;
+
 #[ORM\Table(name: 'posts')]
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post implements EntityInterface
@@ -23,7 +24,6 @@ class Post implements EntityInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 180)]
     private string $title;
-
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
@@ -76,6 +76,6 @@ class Post implements EntityInterface
 
     public function getDTO(): DTOInterface
     {
-        return  new PostDTO();
+        return new PostDTO();
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Builder;
 
 use App\DTO\PostDTO;
@@ -7,13 +9,11 @@ use App\Entity\Post;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-
 final readonly class PostEntityBuilder
 {
     public function __construct(
         private Security $securityUser,
-    )
-    {
+    ) {
     }
 
     public function buildFromDTO(PostDTO $postDTO): Post
@@ -29,5 +29,4 @@ final readonly class PostEntityBuilder
             ->setContent($postDTO->content);
         return $post;
     }
-
 }

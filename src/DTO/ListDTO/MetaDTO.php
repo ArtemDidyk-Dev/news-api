@@ -1,13 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\DTO\ListDTO;
 
 use App\Serializer\AccessGroup;
 use Symfony\Component\Serializer\Attribute\Groups;
 
-#[Groups([
-    AccessGroup::POST_SHOW,
-])]
+#[Groups([AccessGroup::POST_SHOW])]
 class MetaDTO
 {
     public int $totalCount;

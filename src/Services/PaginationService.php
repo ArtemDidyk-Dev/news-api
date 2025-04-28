@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Services;
 
@@ -11,27 +13,26 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 final readonly class PaginationService
 {
     /**
-     * @param QueryBuilder $queryBuilder
-     * @param Request $request
      * @return array{paginator: Paginator, meta: MetaDTO}
-     * @throws NotFoundHttpException
      */
     public function handlePagination(QueryBuilder $queryBuilder, Request $request): array
     {
-        $itemsPerPage = (int)$request->get('itemsPerPage', 12);
+        $itemsPerPage = (int) $request->get('itemsPerPage', 12);
 
         if ($itemsPerPage <= 0) {
-            throw new NotFoundHttpException("Items per page must be a positive integer.");
+            throw new NotFoundHttpException('Items per page must be a positive integer.');
         }
 
-        $currentPage = max((int)$request->get('page', 1), 1);
+        $currentPage = max((int) $request->get('page', 1), 1);
 
         $paginator = new Paginator($queryBuilder, $queryBuilder->getDQLPart('join') !== null);
-        $paginator->getQuery()->setFirstResult(($currentPage - 1) * $itemsPerPage)->setMaxResults($itemsPerPage);
+        $paginator->getQuery()
+            ->setFirstResult(($currentPage - 1) * $itemsPerPage)
+            ->setMaxResults($itemsPerPage);
 
         $totalItems = count($paginator);
 
-        $baseUrl = $request->getSchemeAndHttpHost().$request->getBaseUrl().$request->getPathInfo();
+        $baseUrl = $request->getSchemeAndHttpHost() . $request->getBaseUrl() . $request->getPathInfo();
 
         return [
             'paginator' => $paginator,
@@ -44,7 +45,7 @@ final readonly class PaginationService
         $metaDTO = new MetaDTO();
         $metaDTO->totalCount = $totalCount;
         $metaDTO->currentPage = $currentPage;
-        $metaDTO->totalPages = (int)ceil($totalCount / $itemsPerPage);
+        $metaDTO->totalPages = (int) ceil($totalCount / $itemsPerPage);
         $metaDTO->itemsPerPage = $itemsPerPage;
         $metaDTO->links = $this->generatePaginationLinks($currentPage, $metaDTO->totalPages, $itemsPerPage, $baseUrl);
 
@@ -66,10 +67,10 @@ final readonly class PaginationService
         string $baseUrl
     ): array {
         return [
-            'first' => $baseUrl.'?page=1&itemsPerPage='.$itemsPerPage,
-            'last' => $baseUrl.'?page='.$totalPages.'&itemsPerPage='.$itemsPerPage,
-            'prev' => $currentPage > 1 ? $baseUrl.'?page='.($currentPage - 1).'&itemsPerPage='.$itemsPerPage : null,
-            'next' => $currentPage < $totalPages ? $baseUrl.'?page='.($currentPage + 1).'&itemsPerPage='.$itemsPerPage : null,
+            'first' => $baseUrl . '?page=1&itemsPerPage=' . $itemsPerPage,
+            'last' => $baseUrl . '?page=' . $totalPages . '&itemsPerPage=' . $itemsPerPage,
+            'prev' => $currentPage > 1 ? $baseUrl . '?page=' . ($currentPage - 1) . '&itemsPerPage=' . $itemsPerPage : null,
+            'next' => $currentPage < $totalPages ? $baseUrl . '?page=' . ($currentPage + 1) . '&itemsPerPage=' . $itemsPerPage : null,
         ];
     }
 }

@@ -12,7 +12,6 @@ use App\DTO\PropertyDTO;
 use App\Entity\EntityInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Random\RandomException;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\Extractor\SerializerExtractor;
 use Symfony\Component\PropertyInfo\Type;
@@ -21,9 +20,6 @@ use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 
 trait AutoMapper
 {
-    /**
-     * @throws \ReflectionException
-     */
     public function mapToEntity(
         DTOInterface $dto,
         string $accessGroup,
@@ -32,7 +28,11 @@ trait AutoMapper
         if (! $entity && isset($dto->id)) {
             $entity = $this->getRepositoryObject($dto->getEntityObject()::class)->find($dto->id);
             if (! $entity) {
-                throw new \LogicException(sprintf('Entity \'%s\' with id -%s not found', $dto->getEntityObject()::class, $dto->id));
+                throw new \LogicException(sprintf(
+                    'Entity \'%s\' with id -%s not found',
+                    $dto->getEntityObject()::class,
+                    $dto->id
+                ));
             }
         }
         $entity = $entity ?: $dto->getEntityObject();
@@ -70,14 +70,8 @@ trait AutoMapper
         return $entity;
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws RandomException
-     */
-    public function mapToModel(
-        EntityInterface $entity,
-        string $accessGroup
-    ): DTOInterface {
+    public function mapToModel(EntityInterface $entity, string $accessGroup): DTOInterface
+    {
         $dto = $entity->getDTO();
 
         $props = $this->getPropertiesWithTypesAndGroups($dto, $accessGroup, false);
@@ -105,9 +99,6 @@ trait AutoMapper
         return $dto;
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     public function mapToListModel(array $entities, string $accessGroup): DTOListInterface
     {
         $listDto = new EmptyListDTO();
@@ -130,20 +121,14 @@ trait AutoMapper
 
     private function getGetterMethod(EntityInterface $entity, string $property): ?string
     {
-        $getters = [
-            'get' . ucfirst($property),
-            'is' . ucfirst($property),
-            'has' . ucfirst($property),
-        ];
+        $getters = ['get' . ucfirst($property), 'is' . ucfirst($property), 'has' . ucfirst($property)];
 
         return $this->validateMethod($entity, $getters);
     }
 
     private function getSetterMethod(EntityInterface $entity, string $property): ?string
     {
-        $setters = [
-            'set' . ucfirst($property),
-        ];
+        $setters = ['set' . ucfirst($property)];
 
         return $this->validateMethod($entity, $setters);
     }
@@ -152,20 +137,25 @@ trait AutoMapper
     {
         $availableMethods = array_filter($methods, static fn (string $method): bool => method_exists($entity, $method));
         if (count($availableMethods) > 1) {
-            throw new \LogicException(sprintf('Entity class \'%s\' has multiple same methods - this is insane!', $entity::class));
+            throw new \LogicException(sprintf(
+                'Entity class \'%s\' has multiple same methods - this is insane!',
+                $entity::class
+            ));
         }
 
         $method = current($availableMethods);
         if (! $method) {
-            throw new \BadMethodCallException(sprintf('Entity class \'%s\' does not have any of the attempted methods. Available methods - \'%s\'. Attempted methods were: \'%s\'', $entity::class, implode(',', get_class_methods($entity)), implode(', ', $methods)));
+            throw new \BadMethodCallException(sprintf(
+                'Entity class \'%s\' does not have any of the attempted methods. Available methods - \'%s\'. Attempted methods were: \'%s\'',
+                $entity::class,
+                implode(',', get_class_methods($entity)),
+                implode(', ', $methods)
+            ));
         }
 
         return $method;
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     private function getPropertiesWithTypesAndGroups(
         DTOInterface $dto,
         string $accessGroup,
