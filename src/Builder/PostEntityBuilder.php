@@ -29,4 +29,11 @@ final readonly class PostEntityBuilder
             ->setContent($postDTO->content);
         return $post;
     }
+
+    public function updateFromDTO(Post $post, PostDTO $postDTO): Post
+    {
+        $post->setTitle($postDTO->title)
+            ->setContent($postDTO->content);
+        return $post;
+    }
 }

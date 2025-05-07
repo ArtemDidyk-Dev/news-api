@@ -15,4 +15,6 @@ class AccessGroup
     public const POST_CREATE = 'post:create';
 
     public const POST_SHOW = 'post:show';
+
+    public const POST_UPDATE = 'post:update';
 }

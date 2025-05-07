@@ -33,12 +33,43 @@ class PostManagerList
             $postListDTO->data[] = $this->mapToModel($post, AccessGroup::POST_SHOW);
         }
         $postListDTO->meta = $paginationResult['meta'];
+
         return $postListDTO;
 
     }
 
     private function getQbWithFilter(Request $request): QueryBuilder
     {
-        return $this->em->getRepository(Post::class)->createQueryBuilder('posts');
+        $qb = $this->em->getRepository(Post::class)->createQueryBuilder('posts');
+        $this->searchFilter($qb, $request);
+        $this->applySorting($qb, $request);
+        return $qb;
+    }
+
+    private function searchFilter(QueryBuilder $qb, Request $request): QueryBuilder
+    {
+        if ($request->get('search')) {
+            $search = $request->get('search');
+            $qb->where('posts.title  LIKE :search OR posts.content LIKE :search');
+            $qb->setParameter('search', "%{$search}%");
+        }
+        return $qb;
+    }
+
+    private function applySorting(QueryBuilder $queryBuilder, Request $request): void
+    {
+        $sortField = $request->get('sort');
+        $sortOrder = $request->get('order', 'asc');
+        $validFields = ['id', 'title', 'content'];
+        $validDirections = ['asc', 'desc'];
+        if (! in_array($sortOrder, $validDirections, true)) {
+            $sortOrder = 'asc';
+        }
+
+        if (in_array($sortField, $validFields, true)) {
+            $queryBuilder->orderBy('posts.' . $sortField, strtoupper($sortOrder));
+        } else {
+            $queryBuilder->orderBy('posts.id', 'ASC');
+        }
     }
 }

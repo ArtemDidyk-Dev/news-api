@@ -29,7 +29,7 @@ class Post implements EntityInterface
     #[Assert\NotBlank]
     private string $content;
 
-    #[ORM\ManyToOne(targetEntity: User::class, cascade: ['persist', 'remove'], inversedBy: 'posts')]
+    #[ORM\ManyToOne(targetEntity: User::class,  inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
     private User $author;
 

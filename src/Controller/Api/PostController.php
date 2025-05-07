@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\DTO\PostDTO;
+use App\Entity\Post;
 use App\Manager\PostManager;
 use App\Manager\PostManagerList;
 use App\Serializer\AccessGroup;
@@ -41,18 +42,37 @@ class PostController extends AbstractController
     public function index(Request $request): JsonResponse
     {
         $posts = $this->postManagerList->list($request);
+
         return $this->json($posts, HttpResponse::HTTP_OK);
     }
 
-    //    #[Route('posts/{post}', name: 'show', methods: 'GET')]
-    //    public function show(Post $post): JsonResponse
-    //    {
-    //        return new JsonResponse(1);
-    //    }
-    //
-    //
-    //    public function update(Post $post): JsonResponse
-    //    {
-    //        return new JsonResponse(1);
-    //    }
+    #[Route('posts/{post}', name: 'show', methods: 'GET')]
+    public function show(Post $post): JsonResponse
+    {
+        return $this->json($this->postManager->mapToModel($post, AccessGroup::POST_SHOW), HttpResponse::HTTP_OK);
+    }
+
+    #[Route('posts/update/{post}', name: 'update', methods: 'PUT')]
+    public function update(
+        #[MapRequestPayload(
+            serializationContext: [
+                'groups' => [AccessGroup::POST_UPDATE],
+            ],
+            validationGroups: [AccessGroup::POST_UPDATE]
+        )]
+        PostDTO $postDTO,
+        Post $post
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('POST_UPDATE', $post);
+
+        return $this->json($this->postManager->update($post, $postDTO), HttpResponse::HTTP_OK);
+    }
+
+    #[Route('posts/delete/{post}', name: 'delete', methods: 'DELETE')]
+    public function delete(Post $post): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('POST_DELETE', $post);
+        $this->postManager->delete($post);
+        return $this->json(null, HttpResponse::HTTP_NO_CONTENT);
+    }
 }
