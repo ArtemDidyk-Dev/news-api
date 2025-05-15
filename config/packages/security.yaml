@@ -34,3 +34,4 @@ security:
     - { path: ^/api/(login|token/refresh), roles: PUBLIC_ACCESS }
     - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
     - { path: ^/api/posts/create, roles: ROLE_USER }
+    - { path: ^/api/photo/upload, roles: ROLE_USER }

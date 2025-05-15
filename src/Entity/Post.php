@@ -29,9 +29,15 @@ class Post implements EntityInterface
     #[Assert\NotBlank]
     private string $content;
 
-    #[ORM\ManyToOne(targetEntity: User::class,  inversedBy: 'posts')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
     private User $author;
+
+    #[ORM\OneToOne(targetEntity: Photo::class, inversedBy: 'photo', cascade: [
+        'persist',
+        'remove',
+    ], orphanRemoval: true)]
+    private Photo $photo;
 
     public function getId(): ?int
     {
@@ -77,5 +83,17 @@ class Post implements EntityInterface
     public function getDTO(): DTOInterface
     {
         return new PostDTO();
+    }
+
+    public function getPhoto(): Photo
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(Photo $photo): self
+    {
+        $this->photo = $photo;
+
+        return $this;
     }
 }

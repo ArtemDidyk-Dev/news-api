@@ -17,4 +17,9 @@ class AccessGroup
     public const POST_SHOW = 'post:show';
 
     public const POST_UPDATE = 'post:update';
+
+    //Photo
+    public const PHOTO_UPLOAD = 'photo:upload';
+
+    public const PHOTO_SHOW = 'photo:show';
 }
